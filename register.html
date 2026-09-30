@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rejestracja | AlgoClass</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js" defer></script>
+  <script src="js/register.js" defer></script>
+</head>
+<body>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
+
+  <main class="auth-page">
+    <section class="auth-card">
+      <a class="brand" href="index.html">AlgoClass</a>
+      <p class="subtitle">Utwórz konto ucznia</p>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <label for="email">Adres e-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email"
+                 placeholder="uczen@szkola.pl" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Hasło</label>
+          <input id="password" name="password" type="password"
+                 autocomplete="new-password" required>
+        </div>
+
+        <ul class="password-rules" aria-label="Wymagania hasła">
+          <li id="rule-length">Minimum 8 znaków</li>
+          <li id="rule-uppercase">Minimum 1 wielka litera</li>
+          <li id="rule-number">Minimum 1 cyfra</li>
+          <li id="rule-special">Minimum 1 znak specjalny</li>
+        </ul>
+
+        <div class="field">
+          <label for="password2">Powtórz hasło</label>
+          <input id="password2" name="password2" type="password"
+                 autocomplete="new-password" required>
+        </div>
+
+        <button class="primary-button" type="submit">Utwórz konto</button>
+        <p id="registerMessage" class="form-message" aria-live="polite"></p>
+      </form>
+
+      <div class="auth-links">
+        <a href="index.html">← Powrót do logowania</a>
+      </div>
+
+      <p class="demo-note">Dane nie są jeszcze zapisywane. Prawdziwe konta dodamy wraz z backendem.</p>
+    </section>
+  </main>
+</body>
+</html>
