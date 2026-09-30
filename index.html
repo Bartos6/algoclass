@@ -1,15 +1,53 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoClass</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logowanie | AlgoClass</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js" defer></script>
 </head>
 <body>
-    <h1>AlgoClass</h1>
-    <p>Platforma do nauki programowania C++.</p>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
 
-    <h2>Witaj w AlgoClass!</h2>
-    <p>Pierwsza wersja platformy działa.</p>
+  <main class="auth-page">
+    <section class="auth-card">
+      <a class="brand" href="index.html">AlgoClass</a>
+      <p class="subtitle">Platforma do nauki programowania C++</p>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="email">Adres e-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email"
+                 placeholder="uczen@szkola.pl" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Hasło</label>
+          <input id="password" name="password" type="password"
+                 autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+
+        <button class="primary-button" type="submit">Zaloguj się</button>
+        <p id="loginMessage" class="form-message" aria-live="polite"></p>
+      </form>
+
+      <div class="auth-links">
+        <a href="reset-password.html">Nie pamiętam hasła</a>
+        <p>Nie masz konta? <a href="register.html">Utwórz konto</a></p>
+      </div>
+
+      <p class="demo-note">Wersja demonstracyjna — prawdziwe logowanie zostanie uruchomione po podłączeniu backendu.</p>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const message = document.getElementById("loginMessage");
+      message.textContent = "Formularz działa. Logowanie zostanie podłączone w etapie backendu.";
+      message.className = "form-message info";
+    });
+  </script>
 </body>
 </html>
