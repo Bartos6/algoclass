@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel ucznia | AlgoClass</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/student.css">
+  <script src="js/theme.js" defer></script>
+  <script src="js/student.js" defer></script>
+</head>
+<body class="app-body">
+  <header class="topbar">
+    <a class="app-brand" href="student.html">AlgoClass</a>
+    <div class="topbar-actions">
+      <span class="demo-user">Jan Kowalski</span>
+      <button class="theme-toggle app-theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Nawigacja ucznia">
+      <nav>
+        <button class="nav-link active" data-view="classes">Moje klasy</button>
+        <button class="nav-link" data-view="tasks">Zadania</button>
+        <button class="nav-link" data-view="results">Moje wyniki</button>
+        <button class="nav-link" data-view="profile">Profil</button>
+      </nav>
+      <a class="logout-link" href="index.html">Wyloguj</a>
+    </aside>
+
+    <main class="content">
+      <section class="view active" id="view-classes">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Panel ucznia</p>
+            <h1>Moje klasy</h1>
+            <p class="page-description">Wybierz klasę lub dołącz do nowej za pomocą kodu nauczyciela.</p>
+          </div>
+        </div>
+
+        <div class="grid two-columns">
+          <article class="panel">
+            <h2>Twoje klasy</h2>
+            <button class="class-card" id="openClass">
+              <span class="class-icon">2A</span>
+              <span>
+                <strong>2A – Informatyka</strong>
+                <small>Programowanie C++</small>
+              </span>
+              <span class="arrow">→</span>
+            </button>
+          </article>
+
+          <article class="panel">
+            <h2>Dołącz do klasy</h2>
+            <p class="muted">Wpisz kod otrzymany od nauczyciela.</p>
+            <form id="joinForm" class="join-form">
+              <label for="classCode">Kod klasy</label>
+              <input id="classCode" maxlength="10" placeholder="np. 7KAF32" autocomplete="off">
+              <button class="primary-button compact" type="submit">Dołącz</button>
+              <p id="joinMessage" class="form-message" aria-live="polite"></p>
+            </form>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-tasks">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">2A – Informatyka</p>
+            <h1>Zadania</h1>
+            <p class="page-description">Programowanie C++</p>
+          </div>
+        </div>
+
+        <article class="panel task-section">
+          <div class="section-heading">
+            <div>
+              <h2>Instrukcje warunkowe</h2>
+              <p class="muted">Ćwiczenia z instrukcji if, else i operatorów porównania.</p>
+            </div>
+          </div>
+          <div class="task-list">
+            <button class="task-row" data-task="Liczba parzysta">
+              <span><strong>Liczba parzysta</strong><small>Poziom 1</small></span>
+              <span class="status passed">Zaliczone</span>
+            </button>
+            <button class="task-row" data-task="Większa z dwóch liczb">
+              <span><strong>Większa z dwóch liczb</strong><small>Poziom 1</small></span>
+              <span class="status progress">W trakcie</span>
+            </button>
+            <button class="task-row" data-task="Rok przestępny">
+              <span><strong>Rok przestępny</strong><small>Poziom 2</small></span>
+              <span class="status new">Nie rozpoczęto</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="panel task-section">
+          <div class="section-heading">
+            <div>
+              <h2>Pętle</h2>
+              <p class="muted">Pierwsze zadania wykorzystujące pętle.</p>
+            </div>
+          </div>
+          <div class="task-list">
+            <button class="task-row" data-task="Suma liczb">
+              <span><strong>Suma liczb</strong><small>Poziom 1</small></span>
+              <span class="status submitted">Wysłano</span>
+            </button>
+            <button class="task-row" data-task="Silnia">
+              <span><strong>Silnia</strong><small>Poziom 2</small></span>
+              <span class="status new">Nie rozpoczęto</span>
+            </button>
+          </div>
+        </article>
+        <p id="taskMessage" class="demo-banner">Ekran rozwiązywania zadania dodamy w Kroku 4.</p>
+      </section>
+
+      <section class="view" id="view-results">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Panel ucznia</p>
+            <h1>Moje wyniki</h1>
+            <p class="page-description">Historia Twoich ostatnich wysłań.</p>
+          </div>
+        </div>
+
+        <article class="panel table-panel">
+          <div class="responsive-table">
+            <table>
+              <thead>
+                <tr><th>Zadanie</th><th>Status</th><th>Testy</th><th>Data</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Liczba parzysta</td><td><span class="status passed">Zaliczone</span></td><td>5 / 5</td><td>28.09.2026</td></tr>
+                <tr><td>Większa z dwóch liczb</td><td><span class="status progress">W trakcie</span></td><td>3 / 5</td><td>29.09.2026</td></tr>
+                <tr><td>Suma liczb</td><td><span class="status submitted">Wysłano</span></td><td>4 / 5</td><td>30.09.2026</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="view" id="view-profile">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Konto</p>
+            <h1>Profil</h1>
+          </div>
+        </div>
+
+        <article class="panel profile-card">
+          <div class="avatar">JK</div>
+          <div>
+            <h2>Jan Kowalski</h2>
+            <p class="muted">jan.kowalski@szkola.pl</p>
+            <span class="role-badge">Uczeń</span>
+          </div>
+        </article>
+        <p class="demo-banner">Dane profilu są demonstracyjne. Prawdziwe dane pojawią się po podłączeniu backendu.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
