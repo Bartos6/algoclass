@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel ucznia | AlgoClass</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/student.css"><link rel="stylesheet" href="css/worksheets.css">
+  <link rel="stylesheet" href="css/student.css"><link rel="stylesheet" href="css/worksheets.css"><link rel="stylesheet" href="css/code-tracing.css">
   <script src="js/theme.js" defer></script>
-  <script src="js/student.js" defer></script><script src="js/worksheets.js" defer></script>
+  <script src="js/student.js" defer></script><script src="js/worksheets.js" defer></script><script src="js/code-tracing.js" defer></script>
 </head>
 <body class="app-body">
 <header class="topbar">
@@ -209,6 +209,15 @@
 
     <section class="view" id="view-worksheets">
       <div class="page-heading"><p class="eyebrow">2A – Informatyka</p><h1>Karty pracy</h1><p class="page-description">Materiały PDF i karty interaktywne przypisane do klasy (wersja demonstracyjna).</p></div>
+
+      <div class="trace-intro"><h2>Śledzenie wykonania kodu</h2><p class="muted">Wybierz temat i język. Przeanalizuj instrukcje po kolei: wpisz stan zmiennych w pamięci i przewidź dokładny output programu.</p></div>
+      <div class="trace-controls"><label>Temat<select id="traceTopic"><option value="if">Warunki if</option><option value="while">Pętle while</option></select></label><label>Język<select id="traceLanguage"><option value="cpp">C++</option><option value="python">Python</option></select></label><label>Zadanie<select id="traceExercise"></select></label></div>
+      <section class="panel trace-panel" id="tracePanel" aria-label="Karta pracy: czytanie kodu">
+        <div class="trace-head"><div><span class="worksheet-tag">Czytanie kodu</span><h3 id="traceTitle"></h3></div><span id="traceProgress" class="trace-progress"></span></div>
+        <p id="traceInstruction" class="muted"></p>
+        <div class="trace-code-grid"><div><strong>Kod programu</strong><pre id="traceCode" class="trace-code"></pre></div><div><strong>Input</strong><pre id="traceInput" class="trace-code"></pre><p class="muted trace-hint">W tabeli wpisz stan pamięci <b>po wykonaniu</b> wskazanej instrukcji. Zmienna, która jeszcze nie otrzymała wartości, jest oznaczona kreską (—).</p></div></div>
+        <form id="traceForm"><h4>1. Pamięć komputera</h4><div class="trace-table-scroll"><table class="trace-table"><thead id="traceTableHead"></thead><tbody id="traceTableBody"></tbody></table></div><h4>2. Output programu</h4><p class="muted">Wpisz dokładnie to, co program wypisze. Zachowaj kolejność wierszy.</p><textarea id="traceOutput" rows="3" spellcheck="false" placeholder="Wpisz output..."></textarea><div class="worksheet-actions trace-actions"><button class="secondary-button" type="button" id="traceSave">Zapisz odpowiedzi</button><button class="secondary-button" type="button" id="traceHint">Pokaż podpowiedź</button><button class="primary-button compact" type="submit">Sprawdź odpowiedzi</button><button class="secondary-button" type="button" id="traceReset">Wyczyść</button></div><p id="traceFeedback" class="worksheet-message" aria-live="polite"></p><div id="traceSolution" class="trace-solution" hidden></div></form>
+      </section>
       <div class="worksheet-toolbar"><label for="worksheetFilter">Rodzaj karty</label><select id="worksheetFilter"><option value="all">Wszystkie</option><option value="pdf">PDF</option><option value="interactive">Interaktywne</option></select></div>
       <div class="worksheet-grid">
         <article class="panel worksheet-card" data-worksheet-type="pdf"><span class="worksheet-tag">PDF</span><h2>Podstawy instrukcji warunkowych</h2><p class="muted">Karta do pobrania i wydrukowania. Materiał przykładowy.</p><div class="worksheet-actions"><a class="secondary-button" href="materials/karta-warunki-demo.pdf" target="_blank" rel="noopener">Otwórz PDF</a><a class="secondary-button" href="materials/karta-warunki-demo.pdf" download>Pobierz PDF</a></div></article>
