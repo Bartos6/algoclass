@@ -1,0 +1,127 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C++ — rozkład liczby na cyfry</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#e9eef8;background:#0b1220}*{box-sizing:border-box}body{margin:0}header{background:#111d32;border-bottom:1px solid #30405c;padding:26px max(18px,calc((100vw - 1150px)/2))}h1{font-size:clamp(24px,3vw,34px);margin:0 0 8px}header p{color:#aebdd4;margin:0}main{max-width:1150px;margin:25px auto;padding:0 18px}.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:20px}.panel{background:#121e32;border:1px solid #2b3d59;border-radius:15px;padding:20px}.side{align-self:start}.tasks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.task{padding:11px 0;background:#1a2a42;border:1px solid #344765;color:#eaf2ff;border-radius:9px;cursor:pointer;font-weight:700}.task.active{background:#346de0;border-color:#85aaff}.task.done{border-color:#4ec8a4}.muted{color:#adbed5}.eyebrow{font-size:13px;color:#8eb5ff;text-transform:uppercase;letter-spacing:.07em}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}h2{margin:8px 0 14px;font-size:24px}.columns{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}.section{margin-top:16px}h3{font-size:16px;margin:0 0 10px}pre{background:#07101e;border:1px solid #30415a;border-radius:10px;padding:16px;overflow:auto;font:14px/1.55 Consolas,Monaco,monospace;white-space:pre}label{display:block;font-size:14px;margin:0 0 6px;color:#c8d6e9}input,textarea{width:100%;background:#091525;color:#f2f6ff;border:1px solid #425674;border-radius:8px;padding:11px;font:14px/1.45 Consolas,monospace}textarea{min-height:120px;resize:vertical}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}button.action{padding:11px 15px;border:0;border-radius:9px;background:#3676ee;color:white;font-weight:700;cursor:pointer}button.secondary{background:#283c5a}button.ghost{background:transparent;border:1px solid #506487}button:hover{filter:brightness(1.12)}.result{margin-top:15px;padding:13px;border-radius:9px;background:#0d2032;border:1px solid #315372;white-space:pre-wrap}.good{color:#71e3b2}.bad{color:#ffb5a7}.small{font-size:13px}.progress{height:8px;background:#2c3d56;border-radius:10px;overflow:hidden;margin-top:10px}.bar{height:100%;background:#55c5a3;width:0}.notice{background:#182943;border:1px solid #3a5378;border-radius:10px;padding:12px;margin-top:14px;color:#c8d8ef;font-size:13px}@media(max-width:850px){.layout,.columns{grid-template-columns:1fr}.side{position:static}.tasks{grid-template-columns:repeat(7,1fr)}}@media(max-width:480px){.tasks{grid-template-columns:repeat(5,1fr)}.fields{grid-template-columns:1fr}}
+</style></head><body><header><h1>C++ · Pętla while i cyfry liczby</h1><p>13 zadań z analizą kodu · Input → Pamięć → Output</p></header><main><div class="layout"><aside class="panel side"><strong>Wybierz zadanie</strong><div class="tasks" id="tasks"></div><div class="section"><div id="progressText" class="small muted">Rozwiązane: 0 / 13</div><div class="progress"><div class="bar" id="bar"></div></div></div><div class="notice">W kolumnie <b>Pamięć</b> wpisz kolejne wartości zmiennych oddzielone przecinkami. Uwzględnij wartość początkową i zmiany w pętli. W <b>Output</b> wpisz dokładnie to, co program wypisuje.</div></aside><section class="panel"><div class="top"><span class="eyebrow" id="number"></span><span class="muted small" id="level"></span></div><h2 id="title"></h2><div class="columns"><div><h3>Kod C++</h3><pre id="code"></pre><h3>Input</h3><pre id="inputData"></pre></div><div><h3>Pamięć</h3><div class="fields" id="fields"></div><div class="section"><h3>Output</h3><label for="output">Wynik programu (zachowaj nowe wiersze)</label><textarea id="output" spellcheck="false" placeholder="Wpisz wynik programu..."></textarea></div></div></div><div class="buttons"><button class="action" id="check">Sprawdź odpowiedzi</button><button class="action secondary" id="reveal">Wypełnij poprawnymi odpowiedziami</button><button class="action ghost" id="clear">Wyczyść</button><button class="action ghost" id="next">Następne →</button></div><div class="result" id="result" hidden></div></section></div></main><script>
+const tasks=[
+{title:'Wyodrębnianie cyfr z użyciem pd',level:'Poziom 1',input:'5832',code:`int n, pd = 1, w = 1;
+cin >> n;
+
+while (w > 0) {
+    w = n / pd % 10;
+    cout << w << " ";
+    pd *= 10;
+}`,memory:{n:'5832',pd:'1, 10, 100, 1000, 10000, 100000',w:'1, 2, 3, 8, 5, 0'},output:'2 3 8 5 0 '},
+{title:'Odczytywanie cyfr od końca',level:'Poziom 1',input:'472',code:`int n;
+cin >> n;
+
+while (n > 0) {
+    cout << n % 10 << " ";
+    n /= 10;
+}`,memory:{n:'472, 47, 4, 0'},output:'2 7 4 '},
+{title:'Cyfry w osobnych wierszach',level:'Poziom 1',input:'3058',code:`int n;
+cin >> n;
+
+while (n > 0) {
+    int c = n % 10;
+    cout << c << endl;
+    n /= 10;
+}`,memory:{n:'3058, 305, 30, 3, 0',c:'8, 5, 0, 3'},output:'8\n5\n0\n3\n'},
+{title:'Liczba zawierająca zera',level:'Poziom 1',input:'12040',code:`int n;
+cin >> n;
+
+while (n > 0) {
+    cout << n % 10;
+    n /= 10;
+}`,memory:{n:'12040, 1204, 120, 12, 1, 0'},output:'04021'},
+{title:'Suma cyfr',level:'Poziom 2',input:'5274',code:`int n, s = 0;
+cin >> n;
+
+while (n > 0) {
+    s += n % 10;
+    n /= 10;
+}
+cout << s;`,memory:{n:'5274, 527, 52, 5, 0',s:'0, 4, 11, 13, 18'},output:'18'},
+{title:'Liczenie cyfr',level:'Poziom 2',input:'90806',code:`int n, k = 0;
+cin >> n;
+
+while (n > 0) {
+    k++;
+    n /= 10;
+}
+cout << k;`,memory:{n:'90806, 9080, 908, 90, 9, 0',k:'0, 1, 2, 3, 4, 5'},output:'5'},
+{title:'Iloczyn cyfr',level:'Poziom 2',input:'234',code:`int n, p = 1;
+cin >> n;
+
+while (n > 0) {
+    p *= n % 10;
+    n /= 10;
+}
+cout << p;`,memory:{n:'234, 23, 2, 0',p:'1, 4, 12, 24'},output:'24'},
+{title:'Liczenie cyfr parzystych',level:'Poziom 2',input:'58246',code:`int n, k = 0;
+cin >> n;
+
+while (n > 0) {
+    int c = n % 10;
+    if (c % 2 == 0) {
+        k++;
+    }
+    n /= 10;
+}
+cout << k;`,memory:{n:'58246, 5824, 582, 58, 5, 0',c:'6, 4, 2, 8, 5',k:'0, 1, 2, 3, 4'},output:'4'},
+{title:'Suma cyfr większych od 4',level:'Poziom 3',input:'75382',code:`int n, s = 0;
+cin >> n;
+
+while (n > 0) {
+    int c = n % 10;
+    if (c > 4) {
+        s += c;
+    }
+    n /= 10;
+}
+cout << s;`,memory:{n:'75382, 7538, 753, 75, 7, 0',c:'2, 8, 3, 5, 7',s:'0, 8, 13, 20'},output:'20'},
+{title:'Odwracanie liczby',level:'Poziom 3',input:'1234',code:`int n, w = 0;
+cin >> n;
+
+while (n > 0) {
+    w = w * 10 + n % 10;
+    n /= 10;
+}
+cout << w;`,memory:{n:'1234, 123, 12, 1, 0',w:'0, 4, 43, 432, 4321'},output:'4321'},
+{title:'Największa cyfra',level:'Poziom 3',input:'47392',code:`int n, m = 0;
+cin >> n;
+
+while (n > 0) {
+    int c = n % 10;
+    if (c > m) {
+        m = c;
+    }
+    n /= 10;
+}
+cout << m;`,memory:{n:'47392, 4739, 473, 47, 4, 0',c:'2, 9, 3, 7, 4',m:'0, 2, 9'},output:'9'},
+{title:'Cyfry na pozycjach parzystych',level:'Poziom 3',input:'58372',code:`int n, p = 1, s = 0;
+cin >> n;
+
+while (n > 0) {
+    if (p % 2 == 0) {
+        s += n % 10;
+    }
+    n /= 10;
+    p++;
+}
+cout << s;`,memory:{n:'58372, 5837, 583, 58, 5, 0',p:'1, 2, 3, 4, 5, 6',s:'0, 7, 15'},output:'15'},
+{title:'Tworzenie nowej liczby',level:'Poziom 3',input:'35241',code:`int n, w = 0;
+cin >> n;
+
+while (n > 0) {
+    int c = n % 10;
+    if (c % 2 == 1) {
+        w = w * 10 + c;
+    }
+    n /= 10;
+}
+cout << w;`,memory:{n:'35241, 3524, 352, 35, 3, 0',c:'1, 4, 2, 5, 3',w:'0, 1, 15, 153'},output:'153'}
+];
+let selected=0;const saved=tasks.map(()=>({memory:{},output:'',done:false}));const el=id=>document.getElementById(id);function norm(s){return String(s).trim().replace(/\s*,\s*/g,',').replace(/\s+/g,' ')}function outNorm(s){return String(s).replace(/\r\n/g,'\n').replace(/[ \t]+(?=\n|$)/g,'').replace(/\n+$/,'')}
+function persist(){const s=saved[selected];document.querySelectorAll('[data-var]').forEach(e=>s.memory[e.dataset.var]=e.value);s.output=el('output').value}function render(){const t=tasks[selected],s=saved[selected];el('number').textContent='Zadanie '+(selected+1)+' / '+tasks.length;el('level').textContent=t.level;el('title').textContent=t.title;el('code').textContent=t.code;el('inputData').textContent=t.input;el('fields').innerHTML='';for(const v of Object.keys(t.memory)){const wrap=document.createElement('div');const lab=document.createElement('label');lab.textContent=v+' =';const inp=document.createElement('input');inp.dataset.var=v;inp.value=s.memory[v]||'';inp.placeholder='np. 12, 1, 0';inp.autocomplete='off';wrap.append(lab,inp);el('fields').append(wrap)}el('output').value=s.output;el('result').hidden=true;el('tasks').innerHTML='';tasks.forEach((x,i)=>{const b=document.createElement('button');b.className='task'+(i===selected?' active':'')+(saved[i].done?' done':'');b.textContent=i+1;b.title=x.title;b.onclick=()=>{persist();selected=i;render()};el('tasks').append(b)});const done=saved.filter(x=>x.done).length;el('progressText').textContent='Rozwiązane: '+done+' / '+tasks.length;el('bar').style.width=100*done/tasks.length+'%'}
+el('check').onclick=()=>{persist();const t=tasks[selected],s=saved[selected];let good=0,total=Object.keys(t.memory).length+1;const lines=[];for(const [v,answer] of Object.entries(t.memory)){const ok=norm(s.memory[v]||'')===norm(answer);if(ok)good++;lines.push((ok?'✓ ':'✗ ')+v+(ok?' — poprawnie':' — oczekiwane: '+answer))}const ok=outNorm(s.output)===outNorm(t.output);if(ok)good++;lines.push((ok?'✓ Output — poprawnie':'✗ Output — oczekiwane: '+JSON.stringify(t.output)));s.done=good===total;el('result').hidden=false;el('result').textContent='Wynik: '+good+' / '+total+'\n'+lines.join('\n');el('result').className='result '+(s.done?'good':'bad');const done=saved.filter(x=>x.done).length;el('progressText').textContent='Rozwiązane: '+done+' / '+tasks.length;el('bar').style.width=100*done/tasks.length+'%';el('tasks').children[selected].classList.toggle('done',s.done)};
+el('reveal').onclick=()=>{const t=tasks[selected];document.querySelectorAll('[data-var]').forEach(e=>e.value=t.memory[e.dataset.var]);el('output').value=t.output;persist();el('result').hidden=true};el('clear').onclick=()=>{saved[selected]={memory:{},output:'',done:false};render()};el('next').onclick=()=>{persist();selected=(selected+1)%tasks.length;render()};render();
+</script></body></html>
