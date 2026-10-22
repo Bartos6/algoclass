@@ -1,4 +1,4 @@
-xxxconst tasks = {
+const tasks = {
   "Liczba parzysta": {
     path: "Instrukcje warunkowe / 1. Warunki if / else",
     level: 1, points: 10,
