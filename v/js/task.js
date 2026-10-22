@@ -1,4 +1,4 @@
-const tasks = {
+xxxconst tasks = {
   "Liczba parzysta": {
     path: "Instrukcje warunkowe / 1. Warunki if / else",
     level: 1, points: 10,
@@ -100,53 +100,7 @@ const editor = document.getElementById("codeEditor");
 const input = document.getElementById("customInput");
 const saveStatus = document.getElementById("saveStatus");
 const resultPanel = document.getElementById("resultPanel");
-const storageKey = `algoclass-draft:${taskName}`;
-
-editor.value = localStorage.getItem(storageKey) || starter;
-input.value = task.input;
-
-let saveTimer;
-editor.addEventListener("input", () => {
-  saveStatus.textContent = "Zapisywanie...";
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    localStorage.setItem(storageKey, editor.value);
-    saveStatus.textContent = "Szkic zapisany w przeglądarce";
-  }, 350);
-});
-
-editor.addEventListener("keydown", event => {
-  if (event.key === "Tab") {
-    event.preventDefault();
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    editor.value = editor.value.substring(0,start) + "    " + editor.value.substring(end);
-    editor.selectionStart = editor.selectionEnd = start + 4;
-    editor.dispatchEvent(new Event("input"));
-  }
-});
-
-document.getElementById("runButton").addEventListener("click", () => {
-  const data = input.value || "(brak danych)";
-  resultPanel.innerHTML = `<div class="result-header"><strong>Uruchomienie demonstracyjne</strong><span class="test-hidden">bez kompilatora</span></div><div class="result-body"><p>Po podłączeniu judge'a tutaj pojawi się rzeczywisty wynik programu dla własnych danych.</p><strong>Dane wejściowe:</strong><pre></pre></div>`;
-  resultPanel.querySelector("pre").textContent = data;
-});
-
-document.getElementById("submitButton").addEventListener("click", () => {
-  localStorage.setItem(storageKey, editor.value);
-  saveStatus.textContent = "Szkic zapisany w przeglądarce";
-  resultPanel.innerHTML = `<div class="result-header"><strong>Testy rozwiązania — demonstracja</strong><span class="test-hidden">backend jeszcze niepodłączony</span></div>
-  <div class="result-body"><div class="test-list">
-    <div class="test-row"><span><strong>Test 1</strong><small>Test widoczny · dane: ${escapeHtml(task.input)}</small></span><span class="test-ok">✓ OK</span></div>
-    <div class="test-row"><span><strong>Test 2</strong><small>Test ukryty · dane niewidoczne dla ucznia</small></span><span class="test-ok">✓ OK</span></div>
-    <div class="test-row"><span><strong>Test 3</strong><small>Test ukryty · dane niewidoczne dla ucznia</small></span><span class="test-hidden">— demo</span></div>
-  </div><p style="margin-bottom:0;color:var(--muted);font-size:.82rem">To tylko podgląd interfejsu. Wyniki nie pochodzą z wykonania kodu.</p></div>`;
-});
-
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-}
-
+// Runner and per-language draft handling are installed by code-runner.js.
 const taskDrawer=document.getElementById("taskDrawer");
 const taskDrawerToggle=document.getElementById("taskDrawerToggle");
 const taskDrawerClose=document.getElementById("taskDrawerClose");
