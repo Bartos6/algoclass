@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="css/task.css">
   <script src="js/theme.js" defer></script>
   <script src="js/task.js" defer></script>
+  <script src="js/supabase-config.js" defer></script>
+  <script src="js/cloud.js" defer></script>
+  <script src="js/code-runner.js" defer></script>
+  <link rel="stylesheet" href="css/code-runner.css">
 </head>
 <body class="task-body">
 <header class="task-topbar">
@@ -66,13 +70,13 @@
     <div class="workspace-heading">
       <div>
         <span class="workspace-label">ROZWIĄZANIE</span>
-        <strong>C++</strong>
+        <label class="language-chooser" for="codeLanguage">Język <select id="codeLanguage" aria-label="Język programowania"><option value="cpp">C++</option><option value="python">Python</option></select></label>
       </div>
       <span id="saveStatus" class="save-status">Szkic zapisuje się automatycznie</span>
     </div>
 
     <div class="editor-wrap">
-      <textarea id="codeEditor" spellcheck="false" aria-label="Kod C++"></textarea>
+      <textarea id="codeEditor" spellcheck="false" aria-label="Kod programu"></textarea>
     </div>
 
     <div class="input-section">
@@ -82,7 +86,7 @@
 
     <div class="action-bar">
       <button id="runButton" class="secondary-action" type="button">▶ Uruchom</button>
-      <button id="submitButton" class="primary-action" type="button">Wyślij rozwiązanie</button>
+      <button id="submitButton" class="primary-action" type="button">Zapisz szkic</button>
     </div>
 
     <section class="result-panel" id="resultPanel" aria-live="polite">
@@ -95,7 +99,7 @@
 </main>
 
 <div class="demo-notice">
-  Wersja demonstracyjna GitHub Pages — kod C++ nie jest jeszcze kompilowany. Prawdziwe wykonanie podłączymy do bezpiecznego judge'a.
+  Szkice zapisują się w tej przeglądarce. Uruchamianie kodu wymaga wdrożenia bezpiecznej funkcji Supabase Edge Function. Sprawdzanie testów dodamy w kolejnym kroku.
 </div>
 </body>
 </html>
