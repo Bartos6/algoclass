@@ -8,7 +8,7 @@ function showView(name) {
 }
 
 navButtons.forEach(button => button.addEventListener("click", () => showView(button.dataset.view)));
-document.getElementById("openClass").addEventListener("click", () => showView("tasks"));
+
 
 document.querySelectorAll(".accordion > .accordion-header").forEach(header => {
   header.addEventListener("click", () => {
@@ -16,19 +16,6 @@ document.querySelectorAll(".accordion > .accordion-header").forEach(header => {
     const isOpen = accordion.classList.toggle("open");
     header.setAttribute("aria-expanded", String(isOpen));
   });
-});
-
-document.getElementById("joinForm").addEventListener("submit", event => {
-  event.preventDefault();
-  const code = document.getElementById("classCode").value.trim();
-  const message = document.getElementById("joinMessage");
-  if (code.length < 4) {
-    message.textContent = "Wpisz poprawny kod klasy.";
-    message.className = "form-message error";
-    return;
-  }
-  message.textContent = "Kod przyjęty demonstracyjnie. Dołączanie podłączymy do backendu.";
-  message.className = "form-message info";
 });
 
 document.querySelectorAll("[data-task]").forEach(button => {
