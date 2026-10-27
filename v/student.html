@@ -13,7 +13,7 @@
 <header class="topbar">
   <a class="app-brand" href="student.html">AlgoClass</a>
   <div class="topbar-actions">
-    <span class="demo-user" id="accountTopName">Ładowanie konta…</span>
+    <button type="button" id="openStudentProfile" class="demo-user" title="Otwórz profil" aria-label="Otwórz mój profil" style="cursor:pointer;border:0;background:transparent;color:inherit;font:inherit;padding:7px 10px;border-radius:8px;text-decoration:underline;text-underline-offset:3px"><span id="accountTopName">Ładowanie konta…</span></button>
     <button class="theme-toggle app-theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
   </div>
 </header>
@@ -25,7 +25,6 @@
       <button class="nav-link" data-view="tasks">Zadania</button>
       <button class="nav-link" data-view="worksheets">Karty pracy</button>
       <button class="nav-link" data-view="results">Moje wyniki</button>
-      <button class="nav-link" data-view="profile">Profil</button>
     </nav>
     <a class="logout-link" href="index.html">Wyloguj</a>
   </aside>
@@ -217,5 +216,5 @@
     </section>
   </main>
 </div>
-</body>
+<script>document.getElementById("openStudentProfile")?.addEventListener("click",function(){if(typeof showView==="function")showView("profile");else{document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-profile"));}});</script></body>
 </html>
