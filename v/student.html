@@ -40,18 +40,14 @@
       <div class="grid two-columns">
         <article class="panel">
           <h2>Twoje klasy</h2>
-          <button class="class-card" id="openClass">
-            <span class="class-icon">2A</span>
-            <span><strong>2A – Informatyka</strong><small>Programowanie C++</small></span>
-            <span class="arrow">→</span>
-          </button>
+          <div id="myCloudClasses" aria-live="polite">Wczytywanie klas…</div>
         </article>
         <article class="panel">
           <h2>Dołącz do klasy</h2>
           <p class="muted">Wpisz kod otrzymany od nauczyciela.</p>
           <form id="joinForm" class="join-form">
             <label for="classCode">Kod klasy</label>
-            <input id="classCode" maxlength="10" placeholder="np. 7KAF32" autocomplete="off">
+            <input id="classCode" maxlength="32" placeholder="np. AC-ABC123" autocomplete="off" required>
             <button class="primary-button compact" type="submit">Dołącz</button>
             <p id="joinMessage" class="form-message" aria-live="polite"></p>
           </form>
