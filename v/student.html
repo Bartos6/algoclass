@@ -8,12 +8,12 @@
   <link rel="stylesheet" href="css/student.css">
   <script src="js/theme.js" defer></script>
   <script src="js/student.js" defer></script><script src="js/worksheet-list.js" defer></script>
-<script defer src="js/supabase-config.js"></script><script defer src="js/cloud.js"></script><script defer src="js/student-cloud.js"></script></head>
+<script defer src="js/supabase-config.js"></script><script defer src="js/cloud.js"></script><script defer src="js/student-cloud.js"></script><script defer src="js/profile-online.js"></script></head>
 <body class="app-body">
 <header class="topbar">
   <a class="app-brand" href="student.html">AlgoClass</a>
   <div class="topbar-actions">
-    <span class="demo-user">Jan Kowalski</span>
+    <span class="demo-user" id="accountTopName">Ładowanie konta…</span>
     <button class="theme-toggle app-theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
   </div>
 </header>
@@ -210,10 +210,10 @@
     <section class="view" id="view-profile">
       <div class="page-heading"><p class="eyebrow">Konto</p><h1>Profil</h1></div>
       <article class="panel profile-card">
-        <div class="avatar">JK</div>
-        <div><h2>Jan Kowalski</h2><p class="muted">jan.kowalski@szkola.pl</p><span class="role-badge">Uczeń</span></div>
+        <div class="avatar" id="accountAvatar">…</div>
+        <div><h2 id="accountName">Ładowanie konta…</h2><p class="muted" id="accountEmail"></p><span class="role-badge" id="accountRole">Uczeń</span></div>
       </article>
-      <p class="demo-banner">Dane profilu są demonstracyjne.</p>
+      <p id="accountStatus" class="muted" role="status" aria-live="polite"></p>
     </section>
   </main>
 </div>
