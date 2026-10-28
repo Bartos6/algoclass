@@ -30,7 +30,7 @@ try{
  for(const card of sheets){const opt=document.createElement('option');opt.value=String(card.id);opt.textContent=(card.title||'Bez tytułu')+' ('+(card.lang==='python'?'Python':'C++')+')';chooser.append(opt)}
  submit.disabled=!sheets.length;
  if(!sheets.length)show('Nie znaleziono lokalnych kart pracy. Utwórz kartę w kreatorze na tym samym urządzeniu i w tej samej przeglądarce.');
- else show('Klasa „'+className+'”. Wybierz kartę i opublikuj ją w Supabase.');
+ else show('Klasa „'+className+'”. Projekty kart są zapisane lokalnie. Wybierz projekt i kliknij „Przypisz i opublikuj”, aby pojawił się w Supabase oraz u uczniów.');
  async function list(){const res=await db.from('worksheets').select('id,title,language,updated_at').eq('class_id',classId).order('updated_at',{ascending:false});if(res.error)throw res.error;published.replaceChildren();
  const h=document.createElement('h3');h.textContent='Karty zapisane w Supabase ('+(res.data||[]).length+')';published.append(h);
  if(!res.data?.length){const p=document.createElement('p');p.textContent='Brak opublikowanych kart pracy dla tej klasy.';published.append(p)}
@@ -46,7 +46,7 @@ try{
    const payload={id,owner_id:user.id,class_id:classId,title:card.title,language:card.lang,content:{...card,classId},updated_at:new Date().toISOString()};
    const result=await db.from('worksheets').upsert(payload,{onConflict:'id'}).select('id').single();
    if(result.error)throw result.error;if(result.data?.id!==id)throw Error('Nie otrzymano potwierdzenia zapisu z Supabase.');
-   await list();show('Zapisano w Supabase: „'+card.title+'”. Karta powinna pojawić się na koncie ucznia należącego do tej klasy.');
+   await list();window.dispatchEvent(new CustomEvent('algoclass:worksheet-published',{detail:{classId}}));show('Zapisano w Supabase: „'+card.title+'”. Karta powinna pojawić się na koncie ucznia należącego do tej klasy.');
   }catch(error){show('Nie udało się opublikować karty: '+(error.message||String(error)),true)}finally{submit.disabled=false}
  });
 }catch(error){show('Błąd kart pracy online: '+(error.message||String(error)),true);submit.disabled=true}
