@@ -1,220 +1,193 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="light">
+
+<html data-theme="light" lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel ucznia | AlgoClass</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/student.css"><link rel="stylesheet" href="css/online-worksheets.css">
-  <script src="js/theme.js" defer></script>
-  <script src="js/student.js" defer></script>
-<script defer src="js/supabase-config.js"></script><script defer src="js/cloud.js"></script><script defer src="js/student-cloud.js"></script><script defer src="js/profile-online.js"></script></head>
-<body class="app-body">
-<header class="topbar">
-  <a class="app-brand" href="student.html">AlgoClass</a>
-  <div class="topbar-actions">
-    <button type="button" id="openStudentProfile" class="demo-user" title="Otwórz profil" aria-label="Otwórz mój profil" style="cursor:pointer;border:0;background:transparent;color:inherit;font:inherit;padding:7px 10px;border-radius:8px;text-decoration:underline;text-underline-offset:3px"><span id="accountTopName">Ładowanie konta…</span></button>
-    <button class="theme-toggle app-theme-toggle" type="button" data-theme-toggle aria-label="Zmień motyw">🌙</button>
-  </div>
-</header>
-
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Panel ucznia | AlgoClass</title>
+<link href="css/style.css" rel="stylesheet"/>
+<link href="css/student.css" rel="stylesheet"/><link href="css/online-worksheets.css" rel="stylesheet"/>
+<script defer="" src="js/app-layout.js"></script><script defer="" src="js/theme.js"></script>
+<script defer="" src="js/student.js"></script>
+<script defer="" src="js/supabase-config.js"></script><script defer="" src="js/cloud.js"></script><script defer="" src="js/student-cloud.js"></script><script defer="" src="js/profile-online.js"></script></head>
+<body class="app-body" data-algoclass-page="student" data-algoclass-role="student">
+<header class="topbar" data-algoclass-topbar=""></header>
 <div class="app-shell">
-  <aside class="sidebar">
-    <nav>
-      <button class="nav-link active" data-view="classes">Moje klasy</button>
-      <button class="nav-link" data-view="tasks">Zadania</button>
-      <button class="nav-link" data-view="worksheets">Karty pracy</button>
-      <button class="nav-link" data-view="results">Moje wyniki</button>
-    </nav>
-    <a class="logout-link" href="index.html">Wyloguj</a>
-  </aside>
-
-  <main class="content">
-    <section class="view active" id="view-classes">
-      <div class="page-heading">
-        <p class="eyebrow">Panel ucznia</p>
-        <h1>Moje klasy</h1>
-        <p class="page-description">Wybierz klasę lub dołącz do nowej za pomocą kodu nauczyciela.</p>
-      </div>
-      <div class="grid two-columns">
-        <article class="panel">
-          <h2>Twoje klasy</h2>
-          <div id="myCloudClasses" aria-live="polite">Wczytywanie klas…</div>
-        </article>
-        <article class="panel">
-          <h2>Dołącz do klasy</h2>
-          <p class="muted">Wpisz kod otrzymany od nauczyciela.</p>
-          <form id="joinForm" class="join-form">
-            <label for="classCode">Kod klasy</label>
-            <input id="classCode" maxlength="32" placeholder="np. AC-ABC123" autocomplete="off" required>
-            <button class="primary-button compact" type="submit">Dołącz</button>
-            <p id="joinMessage" class="form-message" aria-live="polite"></p>
-          </form>
-        </article>
-      </div>
-    </section>
-
-    <section class="view" id="view-tasks">
-      <div class="page-heading">
-        <p class="eyebrow">2A – Informatyka</p>
-        <h1>Zadania</h1>
-        <p class="page-description">Programowanie C++ — wybierz dział, aby zobaczyć materiały i zadania.</p>
-      </div>
-
-      <div class="chapter-list">
-
-        <article class="chapter accordion">
-          <button class="accordion-header" type="button" aria-expanded="false">
-            <span><strong>Instrukcje warunkowe</strong><small>Teoria, podrozdziały i zadania</small></span>
-            <span class="chevron">⌄</span>
-          </button>
-          <div class="accordion-content">
-            <div class="theory-box">
-              <div>
-                <span class="material-label">TEORIA</span>
-                <h3>Instrukcje warunkowe — wprowadzenie</h3>
-                <p>Materiały wprowadzające do podejmowania decyzji w programach C++.</p>
-              </div>
-              <a class="secondary-button theory-link" href="theory.html#warunki">Teoria</a>
-            </div>
-
-            <div class="subchapter-list">
-              <section class="subchapter accordion nested">
-                <button class="accordion-header sub-header" type="button" aria-expanded="false">
-                  <span><strong>1. Warunki if / else</strong><small>Podstawowe instrukcje warunkowe</small></span>
-                  <span class="chevron">⌄</span>
-                </button>
-                <div class="accordion-content">
+<aside aria-label="Nawigacja AlgoClass" class="sidebar" data-algoclass-sidebar=""></aside>
+<main class="content">
+<section class="view active" id="view-classes">
+<div class="page-heading">
+<p class="eyebrow">Panel ucznia</p>
+<h1>Moje klasy</h1>
+<p class="page-description">Wybierz klasę lub dołącz do nowej za pomocą kodu nauczyciela.</p>
+</div>
+<div class="grid two-columns">
+<article class="panel">
+<h2>Twoje klasy</h2>
+<div aria-live="polite" id="myCloudClasses">Wczytywanie klas…</div>
+</article>
+<article class="panel">
+<h2>Dołącz do klasy</h2>
+<p class="muted">Wpisz kod otrzymany od nauczyciela.</p>
+<form class="join-form" id="joinForm">
+<label for="classCode">Kod klasy</label>
+<input autocomplete="off" id="classCode" maxlength="32" placeholder="np. AC-ABC123" required=""/>
+<button class="primary-button compact" type="submit">Dołącz</button>
+<p aria-live="polite" class="form-message" id="joinMessage"></p>
+</form>
+</article>
+</div>
+</section>
+<section class="view" id="view-tasks">
+<div class="page-heading">
+<p class="eyebrow">2A – Informatyka</p>
+<h1>Zadania</h1>
+<p class="page-description">Programowanie C++ — wybierz dział, aby zobaczyć materiały i zadania.</p>
+</div>
+<div class="chapter-list">
+<article class="chapter accordion">
+<button aria-expanded="false" class="accordion-header" type="button">
+<span><strong>Instrukcje warunkowe</strong><small>Teoria, podrozdziały i zadania</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
+<div class="theory-box">
+<div>
+<span class="material-label">TEORIA</span>
+<h3>Instrukcje warunkowe — wprowadzenie</h3>
+<p>Materiały wprowadzające do podejmowania decyzji w programach C++.</p>
+</div>
+<a class="secondary-button theory-link" href="theory.html#warunki">Teoria</a>
+</div>
+<div class="subchapter-list">
+<section class="subchapter accordion nested">
+<button aria-expanded="false" class="accordion-header sub-header" type="button">
+<span><strong>1. Warunki if / else</strong><small>Podstawowe instrukcje warunkowe</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
 <div class="task-list">
-                    <button class="task-row" data-task="Liczba parzysta">
-                      <span><strong>Liczba parzysta</strong><small>Poziom 1</small></span>
-                      <span class="status passed">Zaliczone</span>
-                    </button>
-                    <button class="task-row" data-task="Większa z dwóch liczb">
-                      <span><strong>Większa z dwóch liczb</strong><small>Poziom 1</small></span>
-                      <span class="status progress">W trakcie</span>
-                    </button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="subchapter accordion nested">
-                <button class="accordion-header sub-header" type="button" aria-expanded="false">
-                  <span><strong>2. Kilka warunków: if / else if / else</strong><small>Więcej niż dwie możliwości</small></span>
-                  <span class="chevron">⌄</span>
-                </button>
-                <div class="accordion-content">
+<button class="task-row" data-task="Liczba parzysta">
+<span><strong>Liczba parzysta</strong><small>Poziom 1</small></span>
+<span class="status passed">Zaliczone</span>
+</button>
+<button class="task-row" data-task="Większa z dwóch liczb">
+<span><strong>Większa z dwóch liczb</strong><small>Poziom 1</small></span>
+<span class="status progress">W trakcie</span>
+</button>
+</div>
+</div>
+</section>
+<section class="subchapter accordion nested">
+<button aria-expanded="false" class="accordion-header sub-header" type="button">
+<span><strong>2. Kilka warunków: if / else if / else</strong><small>Więcej niż dwie możliwości</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
 <div class="task-list">
-                    <button class="task-row" data-task="Ocena z punktów">
-                      <span><strong>Ocena z punktów</strong><small>Poziom 1</small></span>
-                      <span class="status new">Nie rozpoczęto</span>
-                    </button>
-                    <button class="task-row" data-task="Największa z trzech liczb">
-                      <span><strong>Największa z trzech liczb</strong><small>Poziom 2</small></span>
-                      <span class="status new">Nie rozpoczęto</span>
-                    </button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="subchapter accordion nested">
-                <button class="accordion-header sub-header" type="button" aria-expanded="false">
-                  <span><strong>3. Spójniki AND / OR</strong><small>Łączenie warunków logicznych</small></span>
-                  <span class="chevron">⌄</span>
-                </button>
-                <div class="accordion-content">
+<button class="task-row" data-task="Ocena z punktów">
+<span><strong>Ocena z punktów</strong><small>Poziom 1</small></span>
+<span class="status new">Nie rozpoczęto</span>
+</button>
+<button class="task-row" data-task="Największa z trzech liczb">
+<span><strong>Największa z trzech liczb</strong><small>Poziom 2</small></span>
+<span class="status new">Nie rozpoczęto</span>
+</button>
+</div>
+</div>
+</section>
+<section class="subchapter accordion nested">
+<button aria-expanded="false" class="accordion-header sub-header" type="button">
+<span><strong>3. Spójniki AND / OR</strong><small>Łączenie warunków logicznych</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
 <div class="task-list">
-                    <button class="task-row" data-task="Przedział liczbowy">
-                      <span><strong>Przedział liczbowy</strong><small>Poziom 1</small></span>
-                      <span class="status submitted">Wysłano</span>
-                    </button>
-                    <button class="task-row" data-task="Rok przestępny">
-                      <span><strong>Rok przestępny</strong><small>Poziom 2</small></span>
-                      <span class="status new">Nie rozpoczęto</span>
-                    </button>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </article>
-
-        <article class="chapter accordion">
-          <button class="accordion-header" type="button" aria-expanded="false">
-            <span><strong>Pętle</strong><small>Teoria i zadania</small></span>
-            <span class="chevron">⌄</span>
-          </button>
-          <div class="accordion-content">
-            <div class="theory-box">
-              <div>
-                <span class="material-label">TEORIA</span>
-                <h3>Pętle — wprowadzenie</h3>
-                <p>Powtarzanie instrukcji oraz podstawy pętli for i while.</p>
-              </div>
-              <a class="secondary-button theory-link" href="theory.html#petle">Teoria</a>
-            </div>
-            <div class="task-list direct-tasks">
-              <button class="task-row" data-task="Suma liczb">
-                <span><strong>Suma liczb</strong><small>Poziom 1</small></span>
-                <span class="status submitted">Wysłano</span>
-              </button>
-              <button class="task-row" data-task="Silnia">
-                <span><strong>Silnia</strong><small>Poziom 2</small></span>
-                <span class="status new">Nie rozpoczęto</span>
-              </button>
-            </div>
-          </div>
-        </article>
-
-        <article class="chapter accordion">
-          <button class="accordion-header" type="button" aria-expanded="false">
-            <span><strong>Tablice</strong><small>Teoria i zadania</small></span>
-            <span class="chevron">⌄</span>
-          </button>
-          <div class="accordion-content">
-            <div class="theory-box">
-              <div><span class="material-label">TEORIA</span><h3>Tablice jednowymiarowe</h3><p>Tworzenie tablic, indeksowanie i przechodzenie po elementach.</p></div>
-              <a class="secondary-button theory-link" href="theory.html#tablice">Teoria</a>
-            </div>
-            <div class="task-list direct-tasks">
-              <button class="task-row" data-task="Maksimum w tablicy">
-                <span><strong>Maksimum w tablicy</strong><small>Poziom 1</small></span>
-                <span class="status new">Nie rozpoczęto</span>
-              </button>
-            </div>
-          </div>
-        </article>
-
-      </div>
-
-      <p id="taskMessage" class="demo-banner">Wszystkie działy są domyślnie zwinięte. Możesz rozwinąć kilka jednocześnie.</p>
-    </section>
-
-    <section class="view" id="view-results">
-      <div class="page-heading"><p class="eyebrow">Panel ucznia</p><h1>Moje wyniki</h1><p class="page-description">Historia Twoich ostatnich wysłań.</p></div>
-      <article class="panel table-panel"><div class="responsive-table"><table>
-        <thead><tr><th>Zadanie</th><th>Status</th><th>Testy</th><th>Data</th></tr></thead>
-        <tbody>
-          <tr><td>Liczba parzysta</td><td><span class="status passed">Zaliczone</span></td><td>5 / 5</td><td>28.09.2026</td></tr>
-          <tr><td>Większa z dwóch liczb</td><td><span class="status progress">W trakcie</span></td><td>3 / 5</td><td>29.09.2026</td></tr>
-          <tr><td>Suma liczb</td><td><span class="status submitted">Wysłano</span></td><td>4 / 5</td><td>30.09.2026</td></tr>
-        </tbody>
-      </table></div></article>
-    </section>
-
-    <section class="view" id="view-worksheets">
-      <div class="page-heading"><p class="eyebrow">Panel ucznia</p><h1>Karty pracy</h1><p class="page-description">Karty przypisane przez nauczyciela do Twoich klas. Postępy zapisują się na Twoim koncie.</p></div>
-      <div class="panel"><h2>Spis kart pracy</h2><div id="studentWorksheetList" class="worksheet-index"></div></div>
-    </section>
-    <section class="view" id="view-profile">
-      <div class="page-heading"><p class="eyebrow">Konto</p><h1>Profil</h1></div>
-      <article class="panel profile-card">
-        <div class="avatar" id="accountAvatar">…</div>
-        <div><h2 id="accountName">Ładowanie konta…</h2><p class="muted" id="accountEmail"></p><span class="role-badge" id="accountRole">Uczeń</span></div>
-      </article>
-      <p id="accountStatus" class="muted" role="status" aria-live="polite"></p><div id="profileNameEditor"></div>
-    </section>
-  </main>
+<button class="task-row" data-task="Przedział liczbowy">
+<span><strong>Przedział liczbowy</strong><small>Poziom 1</small></span>
+<span class="status submitted">Wysłano</span>
+</button>
+<button class="task-row" data-task="Rok przestępny">
+<span><strong>Rok przestępny</strong><small>Poziom 2</small></span>
+<span class="status new">Nie rozpoczęto</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</article>
+<article class="chapter accordion">
+<button aria-expanded="false" class="accordion-header" type="button">
+<span><strong>Pętle</strong><small>Teoria i zadania</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
+<div class="theory-box">
+<div>
+<span class="material-label">TEORIA</span>
+<h3>Pętle — wprowadzenie</h3>
+<p>Powtarzanie instrukcji oraz podstawy pętli for i while.</p>
+</div>
+<a class="secondary-button theory-link" href="theory.html#petle">Teoria</a>
+</div>
+<div class="task-list direct-tasks">
+<button class="task-row" data-task="Suma liczb">
+<span><strong>Suma liczb</strong><small>Poziom 1</small></span>
+<span class="status submitted">Wysłano</span>
+</button>
+<button class="task-row" data-task="Silnia">
+<span><strong>Silnia</strong><small>Poziom 2</small></span>
+<span class="status new">Nie rozpoczęto</span>
+</button>
+</div>
+</div>
+</article>
+<article class="chapter accordion">
+<button aria-expanded="false" class="accordion-header" type="button">
+<span><strong>Tablice</strong><small>Teoria i zadania</small></span>
+<span class="chevron">⌄</span>
+</button>
+<div class="accordion-content">
+<div class="theory-box">
+<div><span class="material-label">TEORIA</span><h3>Tablice jednowymiarowe</h3><p>Tworzenie tablic, indeksowanie i przechodzenie po elementach.</p></div>
+<a class="secondary-button theory-link" href="theory.html#tablice">Teoria</a>
+</div>
+<div class="task-list direct-tasks">
+<button class="task-row" data-task="Maksimum w tablicy">
+<span><strong>Maksimum w tablicy</strong><small>Poziom 1</small></span>
+<span class="status new">Nie rozpoczęto</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<p class="demo-banner" id="taskMessage">Wszystkie działy są domyślnie zwinięte. Możesz rozwinąć kilka jednocześnie.</p>
+</section>
+<section class="view" id="view-results">
+<div class="page-heading"><p class="eyebrow">Panel ucznia</p><h1>Moje wyniki</h1><p class="page-description">Historia Twoich ostatnich wysłań.</p></div>
+<article class="panel table-panel"><div class="responsive-table"><table>
+<thead><tr><th>Zadanie</th><th>Status</th><th>Testy</th><th>Data</th></tr></thead>
+<tbody>
+<tr><td>Liczba parzysta</td><td><span class="status passed">Zaliczone</span></td><td>5 / 5</td><td>28.09.2026</td></tr>
+<tr><td>Większa z dwóch liczb</td><td><span class="status progress">W trakcie</span></td><td>3 / 5</td><td>29.09.2026</td></tr>
+<tr><td>Suma liczb</td><td><span class="status submitted">Wysłano</span></td><td>4 / 5</td><td>30.09.2026</td></tr>
+</tbody>
+</table></div></article>
+</section>
+<section class="view" id="view-worksheets">
+<div class="page-heading"><p class="eyebrow">Panel ucznia</p><h1>Karty pracy</h1><p class="page-description">Karty przypisane przez nauczyciela do Twoich klas. Postępy zapisują się na Twoim koncie.</p></div>
+<div class="panel"><h2>Spis kart pracy</h2><div class="worksheet-index" id="studentWorksheetList"></div></div>
+</section>
+<section class="view" id="view-profile">
+<div class="page-heading"><p class="eyebrow">Konto</p><h1>Profil</h1></div>
+<article class="panel profile-card">
+<div class="avatar" id="accountAvatar">…</div>
+<div><h2 id="accountName">Ładowanie konta…</h2><p class="muted" id="accountEmail"></p><span class="role-badge" id="accountRole">Uczeń</span></div>
+</article>
+<p aria-live="polite" class="muted" id="accountStatus" role="status"></p><div id="profileNameEditor"></div>
+</section>
+</main>
 </div>
 <script>document.getElementById("openStudentProfile")?.addEventListener("click",function(){if(typeof showView==="function")showView("profile");else{document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-profile"));}});</script></body>
 </html>
