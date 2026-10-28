@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
   const worksheetPanel=document.getElementById('studentWorksheetList');
   if(!classBox||!joinForm)return;
   const setMessage=(value,error=false)=>{message.textContent=value;message.className='form-message '+(error?'error':'info')};
-  const sheetBox=document.createElement('div');sheetBox.id='myCloudSheets';
-  if(worksheetPanel)worksheetPanel.parentNode.insertBefore(sheetBox,worksheetPanel);
+  const sheetBox=worksheetPanel;
+  if(sheetBox)sheetBox.textContent='Ładowanie przypisanych kart z Supabase…';
   const configured=!!window.AlgoCloud&&AlgoCloud.configured();
   if(!configured){classBox.textContent='Nie można pobrać klas: Supabase nie jest skonfigurowane.';joinForm.querySelector('button[type=submit]').disabled=true;return}
   let db,user;
@@ -14,13 +14,13 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
     db=await AlgoCloud.connect();user=await AlgoCloud.session();
     if(!user){classBox.textContent='Zaloguj się, aby wyświetlić swoje klasy.';joinForm.querySelector('button[type=submit]').disabled=true;return}
     await refresh();
-  }catch(error){classBox.textContent='Nie można pobrać klas: '+(error.message||String(error))}
+  }catch(error){classBox.textContent='Nie można pobrać klas: '+(error.message||String(error));if(sheetBox)sheetBox.textContent='Nie można pobrać kart: '+(error.message||String(error))}
   async function refresh(){
     const memberships=await db.from('class_memberships').select('class_id').eq('student_id',user.id);
     if(memberships.error)throw memberships.error;
     const ids=(memberships.data||[]).map(item=>item.class_id);
-    classBox.replaceChildren();sheetBox.replaceChildren();
-    if(!ids.length){classBox.textContent='Nie należysz jeszcze do żadnej klasy. Wpisz kod otrzymany od nauczyciela.';return}
+    classBox.replaceChildren();if(sheetBox)sheetBox.replaceChildren();
+    if(!ids.length){classBox.textContent='Nie należysz jeszcze do żadnej klasy. Wpisz kod otrzymany od nauczyciela.';if(sheetBox)sheetBox.textContent='Dołącz do klasy, aby zobaczyć przypisane karty pracy.';return}
     const classes=await db.from('classrooms').select('id,name').in('id',ids);
     if(classes.error)throw classes.error;
     for(const item of classes.data||[]){
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
       button.onclick=()=>{const nav=document.querySelector('.nav-link[data-view="worksheets"]');if(nav)nav.click();sheetBox.scrollIntoView({behavior:'smooth',block:'start'})};
       classBox.append(button)
     }
-    if(!worksheetPanel)return;
+    if(!sheetBox)return;
     const response=await db.from('worksheets').select('id,title,language,class_id').in('class_id',ids);
     if(response.error)throw response.error;
     const heading=document.createElement('h3');heading.textContent='Karty pracy przypisane do Twoich klas';sheetBox.append(heading);
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
       db.from('worksheet_progress').select('worksheet_id').eq('student_id',user.id).in('worksheet_id',sheetIds),
       db.from('submissions').select('worksheet_id,percent').eq('student_id',user.id).in('worksheet_id',sheetIds)
     ]);
-    if(drafts.error)throw drafts.error;
+    if(drafts.error)throw new Error('Nie udało się odczytać postępów (worksheet_progress): '+drafts.error.message);
     if(submissions.error)throw submissions.error;
     for(const item of drafts.data||[])states.set(item.worksheet_id,'W trakcie');
     for(const item of submissions.data||[])states.set(item.worksheet_id,'Oddana · '+item.percent+'%');
@@ -66,3 +66,4 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
     finally{button.disabled=false}
   });
 });
+

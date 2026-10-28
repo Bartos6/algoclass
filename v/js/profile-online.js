@@ -19,13 +19,24 @@ function editForm(){
   button.disabled=true;info.textContent='Zapisywanie…';
   try{const db=await AlgoCloud.connect(),user=await AlgoCloud.session();if(!user)throw Error('Sesja wygasła. Zaloguj się ponownie.');
    const {error}=await db.from('profiles').update({first_name,last_name}).eq('id',user.id);if(error)throw error;
-   info.textContent='Zapisano dane profilu.';await refresh();
+   info.textContent='Zapisano dane profilu.';await refresh();closeEditor(form.parentElement);
   }catch(err){info.textContent='Nie udało się zapisać: '+(err?.message||'Nieznany błąd')}
   finally{button.disabled=false}
  };
  return form;
 }
-function showEditor(host){if(!host||!details)return;if(host.querySelector('#profileNamesForm'))return;host.append(editForm())}
+function closeEditor(host){if(!host)return;const form=host.querySelector('#profileNamesForm');if(form)form.remove();const btn=host.querySelector('#profileEditButton');if(btn){btn.hidden=false;btn.focus()}}
+function showEditor(host){
+ if(!host)return;
+ let btn=host.querySelector('#profileEditButton');
+ if(!btn){
+  btn=document.createElement('button');btn.type='button';btn.id='profileEditButton';btn.className=teacher?'button':'primary-button';btn.textContent='Edytuj';
+  btn.style.marginTop='12px';
+  btn.addEventListener('click',()=>{if(!details)return;btn.hidden=true;host.append(editForm());const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Anuluj';cancel.className=teacher?'button':'secondary-button';cancel.style.marginLeft='10px';cancel.addEventListener('click',()=>closeEditor(host));host.querySelector('#profileNamesForm').append(cancel);host.querySelector('#profileNamesForm input')?.focus()});
+  host.append(btn);
+ }
+ btn.disabled=!details;
+}
 function draw(){
  const name=details?.name||'Nie udało się wczytać profilu';
  if($('accountTopName'))$('accountTopName').textContent=name;
