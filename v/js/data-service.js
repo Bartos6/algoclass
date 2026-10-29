@@ -1,0 +1,19 @@
+(()=>{'use strict';
+// Wspólna warstwa dostępu do danych dla widoków nauczyciela i ucznia.
+// Nie przechowuje kopii klas ani kart w localStorage. RLS po stronie Supabase
+// pozostaje właściwą kontrolą uprawnień.
+const check=r=>{if(r.error)throw r.error;return r.data||[]};
+async function context(role){if(!window.AlgoCloud?.configured())throw Error('Supabase nie jest skonfigurowane.');const db=await AlgoCloud.connect(),user=await AlgoCloud.session();if(!db||!user)throw Error('Zaloguj się, aby pobrać dane.');if(role){const p=await AlgoCloud.me();if(p?.role!==role)throw Error('Brak uprawnień dla roli '+role+'.')}return{db,user}}
+async function teacherClass(db,user,param){if(!param)throw Error('Brakuje identyfikatora klasy.');let map={};try{map=JSON.parse(localStorage.getItem('algoclass-cloud-classmap-'+user.id)||'{}')}catch{}
+const candidates=[map[param],param.replace(/^cloud-/,''),param].filter((x,i,a)=>x&&a.indexOf(x)===i&&/^[a-f0-9]{8}-[a-f0-9-]{27,}$/i.test(x));
+for(const id of candidates){const r=await db.from('classrooms').select('id,name,join_code').eq('id',id).eq('owner_id',user.id).maybeSingle();if(r.error)throw r.error;if(r.data)return r.data}
+// Wsparcie dla klas z dawnych wersji, tylko jako odczyt mapowania.
+let old=[];try{old=JSON.parse(localStorage.getItem('algoclass-teacher-classes-v1')||'[]')}catch{}const legacy=old.find(c=>c.id===param);if(legacy?.code){const r=await db.from('classrooms').select('id,name,join_code').eq('owner_id',user.id).eq('join_code',legacy.code.toUpperCase()).maybeSingle();if(r.error)throw r.error;if(r.data)return r.data}
+throw Error('Nie odnaleziono klasy w Supabase. Wróć do „Moje klasy” i pobierz klasy ponownie.')}
+async function publishedForClass(db,id){return check(await db.from('worksheets').select('id,title,language,class_id,updated_at').eq('class_id',id).order('updated_at',{ascending:false}))}
+async function publishedByTeacher(db,id){return check(await db.from('worksheets').select('id,title,language,class_id,updated_at').eq('owner_id',id).order('updated_at',{ascending:false}))}
+async function publish(db,{teacherId,classId,card}){if(!card?.title?.trim()||!Array.isArray(card.tasks)||!card.tasks.length)throw Error('Karta musi mieć tytuł i zadania.');if(!['cpp','python'].includes(card.lang))throw Error('Wybierz język Python lub C++.');const id=teacherId+':'+classId+':'+card.id;const r=await db.from('worksheets').upsert({id,owner_id:teacherId,class_id:classId,title:card.title,language:card.lang,content:{...card,classId},updated_at:new Date().toISOString()},{onConflict:'id'}).select('id').single();if(r.error)throw r.error;if(r.data?.id!==id)throw Error('Nie potwierdzono zapisu karty w Supabase.');return r.data}
+async function studentClasses(db,userId){const memberships=check(await db.from('class_memberships').select('class_id').eq('student_id',userId));const ids=[...new Set(memberships.map(x=>x.class_id))];if(!ids.length)return[];return check(await db.from('classrooms').select('id,name').in('id',ids))}
+async function studentWorksheets(db,userId,ids){if(!ids.length)return[];const a=check(await db.from('class_worksheets').select('id,class_id,worksheet_templates(title,language)').in('class_id',ids));if(!a.length)return[];const p=check(await db.from('worksheet_progress').select('assignment_id,status,percent').eq('student_id',userId).in('assignment_id',a.map(x=>x.id)));const states=new Map(p.map(x=>[x.assignment_id,x.status==='submitted'?'Oddana · '+x.percent+'%':'W trakcie']));return a.map(x=>({id:x.id,class_id:x.class_id,title:x.worksheet_templates?.title||'Karta',language:x.worksheet_templates?.language||'cpp',status:states.get(x.id)||'Nierozpoczęta'}))}
+window.AlgoData={context,teacherClass,publishedForClass,publishedByTeacher,publish,studentClasses,studentWorksheets};
+})();
