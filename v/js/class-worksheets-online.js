@@ -8,7 +8,7 @@ const submit=document.createElement('button');submit.type='button';submit.classN
 const create=document.createElement('a');create.href='worksheet-editor.html';create.className='button secondary';create.textContent='+ Utwórz kartę pracy';
 row.append(chooser,submit,create);const published=document.createElement('div');host.replaceChildren(notice,row,published);
 const show=(text,isError=false)=>{notice.textContent=text;notice.style.color=isError?'#e26b6b':''};
-const local=()=>{try{const a=JSON.parse(localStorage.getItem('algoclass-teacher-worksheets-v1')||'[]');return Array.isArray(a)?a:[]}catch{return[]}};
+let templates=[];
 let db,user,classId,className;
 try{
  if(!window.AlgoCloud?.configured())throw Error('Brak konfiguracji Supabase.');
@@ -26,18 +26,18 @@ try{
   if(old?.code){const result=await db.from('classrooms').select('id,name,join_code').eq('owner_id',user.id).eq('join_code',old.code.toUpperCase()).maybeSingle();if(result.error)throw result.error;found=result.data}}
  if(!found)throw Error('Nie odnaleziono klasy w Supabase. Wróć do „Moje klasy” i kliknij „Pobierz klasy z Supabase”.');
  classId=found.id;className=found.name;
- const sheets=local();chooser.replaceChildren();
- for(const card of sheets){const opt=document.createElement('option');opt.value=String(card.id);opt.textContent=(card.title||'Bez tytułu')+' ('+(card.lang==='python'?'Python':'C++')+')';chooser.append(opt)}
- submit.disabled=!sheets.length;
- if(!sheets.length)show('Nie znaleziono lokalnych kart pracy. Utwórz kartę w kreatorze na tym samym urządzeniu i w tej samej przeglądarce.');
- else show('Klasa „'+className+'”. Projekty kart są zapisane lokalnie. Wybierz projekt i kliknij „Przypisz i opublikuj”, aby pojawił się w Supabase oraz u uczniów.');
+ const templatesResult=await db.from('worksheet_templates').select('id,title,language,topic,content').eq('owner_id',user.id).order('updated_at',{ascending:false});if(templatesResult.error)throw templatesResult.error;templates=templatesResult.data||[];chooser.replaceChildren();
+ for(const card of templates){const opt=document.createElement('option');opt.value=card.id;opt.textContent=(card.title||'Bez tytułu')+' ('+(card.language==='python'?'Python':'C++')+')';chooser.append(opt)}
+ submit.disabled=!templates.length;
+ if(!templates.length)show('Nie ma jeszcze kart pracy w Supabase. Utwórz nową kartę w kreatorze.');
+ else show('Wybierz kartę zapisaną online, aby przypisać ją do klasy „'+className+'”.');
  async function list(){const res=await db.from('worksheets').select('id,title,language,updated_at').eq('class_id',classId).order('updated_at',{ascending:false});if(res.error)throw res.error;published.replaceChildren();
  const h=document.createElement('h3');h.textContent='Karty zapisane w Supabase ('+(res.data||[]).length+')';published.append(h);
  if(!res.data?.length){const p=document.createElement('p');p.textContent='Brak opublikowanych kart pracy dla tej klasy.';published.append(p)}
  for(const entry of res.data||[]){const div=document.createElement('div');div.style.cssText='display:flex;gap:12px;align-items:center;padding:10px 0;flex-wrap:wrap;border-top:1px solid var(--border,#43516b)';const name=document.createElement('span');name.textContent=entry.title+' · '+(entry.language==='python'?'Python':'C++');const link=document.createElement('a');link.href='worksheet.html?cloud='+encodeURIComponent(entry.id);link.target='_blank';link.rel='noopener';link.textContent='Otwórz ↗';div.append(name,link);published.append(div)}}
  await list();
  submit.addEventListener('click',async()=>{
-  const card=local().find(x=>String(x.id)===chooser.value);if(!card){show('Wybierz kartę pracy.',true);return}
+  const entry=templates.find(x=>String(x.id)===chooser.value);const card=entry?{...entry.content,id:entry.id,title:entry.title,lang:entry.language,topic:entry.topic,tasks:entry.content?.tasks||[]}:null;if(!card){show('Wybierz kartę pracy.',true);return}
   if(!card.title?.trim()||!Array.isArray(card.tasks)||!card.tasks.length){show('Karta musi mieć tytuł i co najmniej jedno zadanie.',true);return}
   if(!['cpp','python'].includes(card.lang)){show('Nieznany język karty: '+card.lang,true);return}
   submit.disabled=true;show('Zapisywanie karty w Supabase…');
