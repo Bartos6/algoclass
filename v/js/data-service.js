@@ -14,6 +14,14 @@ async function publishedForClass(db,id){const a=check(await db.from('class_works
 async function publishedByTeacher(db,id){const templates=check(await db.from('worksheet_templates').select('id,title,language').eq('owner_id',id));if(!templates.length)return[];const a=check(await db.from('class_worksheets').select('id,class_id,assigned_at,worksheet_id').in('worksheet_id',templates.map(t=>t.id)));const map=new Map(templates.map(t=>[t.id,t]));return a.map(x=>({...x,title:map.get(x.worksheet_id)?.title||'Karta pracy',language:map.get(x.worksheet_id)?.language||'cpp'}))}
 async function publish(db,{classId,card}){if(!classId||!card?.id)throw Error('Wybierz zapisaną kartę pracy oraz klasę.');const r=await db.from('class_worksheets').upsert({class_id:classId,worksheet_id:card.id},{onConflict:'class_id,worksheet_id'}).select('id').single();if(r.error)throw r.error;return r.data}
 async function studentClasses(db,userId){const memberships=check(await db.from('class_memberships').select('class_id').eq('student_id',userId));const ids=[...new Set(memberships.map(x=>x.class_id))];if(!ids.length)return[];return check(await db.from('classrooms').select('id,name').in('id',ids))}
-async function studentWorksheets(db,userId,ids){if(!ids.length)return[];const a=check(await db.from('class_worksheets').select('id,class_id,worksheet_templates(title,language)').in('class_id',ids));if(!a.length)return[];const p=check(await db.from('worksheet_progress').select('assignment_id,status,percent').eq('student_id',userId).in('assignment_id',a.map(x=>x.id)));const states=new Map(p.map(x=>[x.assignment_id,x.status==='submitted'?'Oddana · '+x.percent+'%':'W trakcie']));return a.map(x=>({id:x.id,class_id:x.class_id,title:x.worksheet_templates?.title||'Karta',language:x.worksheet_templates?.language||'cpp',status:states.get(x.id)||'Nierozpoczęta'}))}
+async function studentWorksheets(db,userId,ids){
+ if(!ids.length)return[];
+ const result=await db.rpc('ac_student_worksheets');
+ if(result.error)throw result.error;
+ return (result.data||[]).filter(x=>ids.includes(x.class_id)).map(x=>({
+   id:x.id,class_id:x.class_id,title:x.title,language:x.language,
+   status:x.status==='submitted'?'Oddana · '+x.percent+'%':x.status==='in_progress'?'W trakcie':'Nierozpoczęta'
+ }));
+}
 window.AlgoData={context,teacherClass,publishedForClass,publishedByTeacher,publish,studentClasses,studentWorksheets};
 })();
