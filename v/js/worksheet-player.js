@@ -1,15 +1,172 @@
-(()=>{'use strict';const el=id=>document.getElementById(id);const id=new URLSearchParams(location.search).get('id');let custom=[];try{custom=JSON.parse(localStorage.getItem('algoclass-teacher-worksheets-v1'))||[]}catch{}const sheet=window.AlgoCloudSheet;if(!sheet||!Array.isArray(sheet.tasks)||!sheet.tasks.length){el('missing').hidden=false;return}el('player').hidden=false;el('sheetName').textContent=sheet.title;document.title=sheet.title+' – AlgoClass';el('codeHeading').textContent='Kod '+(sheet.lang==='python'?'Python':'C++');const showExpected=sheet.showExpectedAnswers===true;const cloudMode=!!window.AlgoCloudSheet;const KEY='algoclass-worksheet-progress-v2-'+sheet.id;const SUBKEY='algoclass-worksheet-submissions-v1';let saved={};if(!cloudMode)try{saved=JSON.parse(localStorage.getItem(KEY))||{}}catch{}let selected=0;const norm=s=>String(s||'').trim().replace(/\s*,\s*/g,',').replace(/\s+/g,' '),outNorm=s=>String(s||'').replace(/\r\n/g,'\n').replace(/[ \t]+(?=\n|$)/g,'').replace(/\n+$/,'');function memory(t){if(typeof t.memory==='object'&&t.memory!==null)return t.memory;const o={};for(const row of String(t.memory||'').split(/\r?\n/)){const m=row.match(/^\s*([a-zA-Z_]\w*)\s*=\s*(.+)\s*$/);if(m)o[m[1]]=m[2].trim()}return o}let db=null,user=null,remoteChain=Promise.resolve(),saveTimer=null,onlineError='',onlineSubmitted=false;
-function status(text){const node=el('submissionMessage');if(node)node.textContent=text}
-function snapshot(){return JSON.parse(JSON.stringify(saved))}
-function sendRemote(){if(!cloudMode||!db||!user)return Promise.resolve();clearTimeout(saveTimer);const payload=snapshot();remoteChain=remoteChain.catch(()=>{}).then(async()=>{const {error}=await db.from('worksheet_progress').upsert({assignment_id:sheet.id,student_id:user.id,answers:payload,updated_at:new Date().toISOString()},{onConflict:'assignment_id,student_id'});if(error)throw error;onlineError='';}).catch(e=>{onlineError=e.message;status('Nie udało się zapisać postępu online: '+e.message);throw e});return remoteChain}
-function store(){if(!cloudMode){try{localStorage.setItem(KEY,JSON.stringify(saved))}catch{}return}if(!db||!user)return;clearTimeout(saveTimer);saveTimer=setTimeout(()=>{sendRemote().catch(()=>{})},900)}
-async function flush(){if(!cloudMode)return;clearTimeout(saveTimer);await sendRemote()}
-function persist(){const t=sheet.tasks[selected],s=saved[t.id]||{memory:{},output:'',done:false};el('fields').querySelectorAll('[data-var]').forEach(e=>s.memory[e.dataset.var]=e.value);s.output=el('output').value;saved[t.id]=s;store()}function render(){const t=sheet.tasks[selected],s=saved[t.id]||{memory:{},output:'',done:false};el('number').textContent='Zadanie '+(selected+1)+' / '+sheet.tasks.length;el('level').textContent='Poziom '+(t.level||1);el('title').textContent=t.title;el('code').textContent=t.code;el('inputData').textContent=t.input||'(brak danych)';el('fields').replaceChildren();for(const v of Object.keys(memory(t))){const wrap=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=v+' =';inp.dataset.var=v;inp.value=s.memory?.[v]||'';inp.placeholder='np. 3, 2, 1, 0';inp.autocomplete='off';wrap.append(label,inp);el('fields').append(wrap)}el('output').value=s.output||'';el('result').hidden=true;el('tasks').replaceChildren();sheet.tasks.forEach((x,i)=>{const b=document.createElement('button');b.className='task'+(i===selected?' active':'')+(saved[x.id]?.done?' done':'');b.textContent=i+1;b.title=x.title;b.onclick=()=>{persist();selected=i;render()};el('tasks').append(b)});const done=sheet.tasks.filter(t=>saved[t.id]?.done).length;el('progressText').textContent='Rozwiązane: '+done+' / '+sheet.tasks.length;el('bar').style.width=100*done/sheet.tasks.length+'%';updateSummary()}el('check').onclick=()=>{persist();const t=sheet.tasks[selected],s=saved[t.id],mem=memory(t);let good=0;const lines=[];for(const [v,answer]of Object.entries(mem)){const ok=norm(s.memory?.[v])===norm(answer);good+=Number(ok);lines.push((ok?'✓ ':'✗ ')+v+(ok?' — poprawnie':showExpected?' — oczekiwane: '+answer:' — niepoprawnie'))}const ok=outNorm(s.output)===outNorm(t.output);good+=Number(ok);lines.push(ok?'✓ Output — poprawnie':showExpected?'✗ Output — oczekiwane: '+JSON.stringify(t.output):'✗ Output — niepoprawnie');s.done=good===Object.keys(mem).length+1;s.points=good;s.maxPoints=Object.keys(mem).length+1;s.checked=true;store();updateSummary();el('result').hidden=false;el('result').textContent='Wynik: '+good+' / '+(Object.keys(mem).length+1)+'\n'+lines.join('\n');el('result').className='result '+(s.done?'good':'bad');const done=sheet.tasks.filter(t=>saved[t.id]?.done).length;el('progressText').textContent='Rozwiązane: '+done+' / '+sheet.tasks.length;el('bar').style.width=100*done/sheet.tasks.length+'%';el('tasks').children[selected].classList.toggle('done',s.done);updateSummary()};el('clear').onclick=()=>{saved[sheet.tasks[selected].id]={memory:{},output:'',done:false};store();render()};el('next').onclick=()=>{persist();selected=(selected+1)%sheet.tasks.length;render()};function readSubmissions(){try{const x=JSON.parse(localStorage.getItem(SUBKEY));return Array.isArray(x)?x:[]}catch{return[]}}
-function statistics(){let points=0,maxPoints=0,checked=0,attempted=0,correct=0;for(const t of sheet.tasks){const x=saved[t.id];const m=memory(t);const total=Object.keys(m).length+1;maxPoints+=total;if(x&&(Object.values(x.memory||{}).some(v=>String(v).trim())||String(x.output||'').trim()))attempted++;if(x?.checked){checked++;points+=Number(x.points)||0;if(x.done)correct++}}return{points,maxPoints,checked,attempted,correct,percent:maxPoints?Math.round(points/maxPoints*100):0}}
-function updateSummary(){const st=statistics();const row=cloudMode?onlineSubmitted:readSubmissions().some(x=>x.sheetId===sheet.id);el('worksheetStatus').textContent=row?'Oddana':st.attempted?'W trakcie':'Nierozpoczęta';el('worksheetScore').textContent='Sprawdzone zadania: '+st.checked+'/'+sheet.tasks.length+' · Punkty: '+st.points+'/'+st.maxPoints+' ('+st.percent+'%)';}
-function changed(){const t=sheet.tasks[selected];const record=saved[t.id]||{memory:{},output:'',done:false};record.checked=false;record.done=false;record.points=0;saved[t.id]=record;persist();updateSummary()}
-el('fields').addEventListener('input',changed);el('output').addEventListener('input',changed);
-el('saveProgress').onclick=async()=>{persist();updateSummary();try{await flush();status(cloudMode?'Postęp zapisany na Twoim koncie Supabase.':'Postęp zapisany w tej przeglądarce.')}catch(e){status('Nie udało się zapisać postępu: '+e.message)}};
-el('submitWorksheet').onclick=async()=>{persist();const st=statistics();if(st.checked!==sheet.tasks.length){const missing=sheet.tasks.length-st.checked;if(!window.confirm('Nie wszystkie zadania zostały zrobione lub sprawdzone ('+missing+' z '+sheet.tasks.length+'). Czy na pewno chcesz przesłać kartę pracy?')){el('submissionMessage').textContent='Nie oddano karty. Możesz kontynuować rozwiązywanie.';return}}const rows=readSubmissions();const record={sheetId:sheet.id,sheetTitle:sheet.title,classId:sheet.classId||'',language:sheet.lang||'cpp',taskCount:sheet.tasks.length,points:st.points,maxPoints:st.maxPoints,percent:st.percent,submittedAt:new Date().toISOString(),studentLabel:'Uczeń (ta przeglądarka)',answers:sheet.tasks.map(t=>({id:t.id,title:t.title,memory:{...(saved[t.id]?.memory||{})},output:saved[t.id]?.output||'',points:saved[t.id]?.points||0,maxPoints:saved[t.id]?.maxPoints||Object.keys(memory(t)).length+1}))};const index=rows.findIndex(r=>r.sheetId===sheet.id);if(index===-1)rows.push(record);else rows[index]=record;try{if(cloudMode){if(!db||!user)throw Error('Zaloguj się, aby oddać kartę online.');await flush();const {error}=await db.from('worksheet_progress').upsert({assignment_id:sheet.id,student_id:user.id,answers:snapshot(),points:record.points,max_points:record.maxPoints,percent:record.percent,status:'submitted',submitted_at:record.submittedAt,updated_at:record.submittedAt},{onConflict:'assignment_id,student_id'});if(error)throw error;onlineSubmitted=true;el('submissionMessage').textContent='Karta została przesłana nauczycielowi. Wynik: '+st.percent+'%.';}else{localStorage.setItem(SUBKEY,JSON.stringify(rows));el('submissionMessage').textContent='Karta oddana lokalnie. Wynik: '+st.percent+'%.';}updateSummary()}catch(err){el('submissionMessage').textContent='Nie udało się oddać pracy: '+err.message;}};
-window.addEventListener('pagehide',()=>{if(!el('player').hidden)persist()});
-(async()=>{if(cloudMode){try{db=await AlgoCloud.connect();user=await AlgoCloud.session();if(!user)throw Error('Zaloguj się, aby zapisywać postępy kart pracy.');const {data,error}=await db.from('worksheet_progress').select('answers,status').eq('assignment_id',sheet.id).eq('student_id',user.id).maybeSingle();if(error)throw error;saved=data?.answers&&typeof data.answers==='object'&&!Array.isArray(data.answers)?data.answers:{};onlineSubmitted=data?.status==='submitted';if(data)status('Wczytano zapisany postęp z Twojego konta.');}catch(e){el('player').hidden=true;el('missing').hidden=false;el('missing').textContent='Nie można wczytać Twoich postępów: '+e.message;return}}render()})()})();
+(() => {
+  'use strict';
+  const el = id => document.getElementById(id);
+  const sheet = window.AlgoCloudSheet;
+  if (!sheet?.tasks?.length) { el('missing').hidden = false; return; }
+  el('player').hidden = false;
+  el('sheetName').textContent = sheet.title;
+  document.title = sheet.title + ' – AlgoClass';
+  el('codeHeading').textContent = 'Kod ' + (sheet.lang === 'python' ? 'Python' : 'C++');
+  const answers = {};
+  let selected = 0, db, user, remoteState = null;
+  let timer = null, saving = Promise.resolve(), loading = true, lastError = '';
+  const msg = text => { el('submissionMessage').textContent = text; };
+  const getEntry = id => answers[id] ||= {memory:{},output:'',checked:false};
+  function storeCurrent() {
+    const entry = getEntry(sheet.tasks[selected].id);
+    el('fields').querySelectorAll('[data-var]').forEach(x => { entry.memory[x.dataset.var] = x.value; });
+    entry.output = el('output').value;
+  }
+  function summary() {
+    const checked = sheet.tasks.filter(t => getEntry(t.id).checked).length;
+    const completed = sheet.tasks.filter(t => remoteState?.grades?.[t.id]?.done).length;
+    el('progressText').textContent = 'Poprawnie rozwiązane: ' + completed + ' / ' + sheet.tasks.length;
+    el('bar').style.width = (100*completed/sheet.tasks.length) + '%';
+    el('worksheetStatus').textContent = remoteState?.status === 'submitted' ? 'Oddana' :
+      sheet.tasks.some(t => {
+        const v=getEntry(t.id);
+        return !!v.output.trim() || Object.values(v.memory).some(x => String(x).trim());
+      }) ? 'W trakcie' : 'Nierozpoczęta';
+    el('worksheetScore').textContent = remoteState ?
+      'Sprawdzone zadania: ' + remoteState.checked + '/' + sheet.tasks.length +
+      ' · Punkty: ' + remoteState.points + '/' + remoteState.maxPoints +
+      ' (' + remoteState.percent + '%)' : 'Wynik: jeszcze nie sprawdzono.';
+  }
+  function render() {
+    const task = sheet.tasks[selected], entry = getEntry(task.id);
+    el('number').textContent = 'Zadanie ' + (selected+1) + ' / ' + sheet.tasks.length;
+    el('level').textContent = 'Poziom ' + (task.level || 1);
+    el('title').textContent = task.title || 'Zadanie';
+    el('code').textContent = task.code || '';
+    el('inputData').textContent = task.input || '(brak danych)';
+    el('fields').replaceChildren();
+    Object.keys(task.memory || {}).forEach(name => {
+      const wrap = document.createElement('div');
+      const label = document.createElement('label'); label.textContent = name + ' =';
+      const input = document.createElement('input'); input.dataset.var = name;
+      input.value = entry.memory?.[name] || ''; input.placeholder = 'np. 3, 2, 1, 0';
+      input.autocomplete = 'off'; wrap.append(label,input); el('fields').append(wrap);
+    });
+    el('output').value = entry.output || '';
+    el('result').hidden = true;
+    el('tasks').replaceChildren();
+    sheet.tasks.forEach((t,i) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'task' + (i === selected ? ' active' : '') +
+        (remoteState?.grades?.[t.id]?.done ? ' done' : '');
+      button.textContent = i+1; button.title = t.title;
+      button.onclick = () => { storeCurrent(); selected = i; render(); };
+      el('tasks').append(button);
+    });
+    summary();
+  }
+  // Jedna kolejka żądań zabezpiecza przed nadpisaniem nowszej wersji starszą.
+  function save(checkTask = null, submit = false) {
+    clearTimeout(timer);
+    storeCurrent();
+    const payload = JSON.parse(JSON.stringify(answers));
+    saving = saving.catch(() => {}).then(async () => {
+      if (!db || !user) throw Error('Brak połączenia z kontem ucznia.');
+      const {data,error} = await db.rpc('ac_save_student_progress',{
+        p_assignment:sheet.id,p_answers:payload,p_check_task:checkTask,p_submit:submit
+      });
+      if (error) throw error;
+      remoteState = data;
+      lastError = '';
+      if (submit) msg('Karta została oddana nauczycielowi.');
+      else if (checkTask === null) msg('Postęp zapisany.');
+      summary();
+      return data;
+    }).catch(error => {
+      lastError = error.message || String(error);
+      msg('Nie udało się zapisać pracy: ' + lastError);
+      throw error;
+    });
+    return saving;
+  }
+  function schedule() {
+    if (loading) return;
+    clearTimeout(timer);
+    msg('Zapisywanie zmian…');
+    timer = setTimeout(() => { save().catch(() => {}); }, 1100);
+  }
+  function changed() {
+    const entry = getEntry(sheet.tasks[selected].id);
+    entry.checked = false;
+    storeCurrent();
+    remoteState = null; // Nie pokazuj nieaktualnej punktacji po zmianach.
+    summary(); schedule();
+  }
+  el('fields').addEventListener('input', changed);
+  el('output').addEventListener('input', changed);
+  el('check').onclick = async () => {
+    const task = sheet.tasks[selected];
+    try {
+      el('check').disabled = true;
+      const result = await save(task.id,false);
+      getEntry(task.id).checked = true;
+      const grade = result.grades?.[task.id];
+      if (!grade) throw Error('Nie otrzymano wyniku zadania.');
+      const lines = (grade.feedback || []).map(f => (f.correct ? '✓ ' : '✗ ') + f.name +
+        (f.correct ? ' — poprawnie' : ('expected' in f ? ' — oczekiwane: ' + f.expected : ' — niepoprawnie')));
+      el('result').hidden = false;
+      el('result').textContent = 'Wynik: ' + grade.points + ' / ' + grade.maxPoints + '\n' + lines.join('\n');
+      el('result').className = 'result ' + (grade.done ? 'good' : 'bad');
+      renderTaskMarkers();
+    } catch (error) { msg('Nie udało się sprawdzić zadania: ' + error.message); }
+    finally { el('check').disabled = false; }
+  };
+  function renderTaskMarkers() {
+    [...el('tasks').children].forEach((b,i) => b.classList.toggle('done', !!remoteState?.grades?.[sheet.tasks[i].id]?.done));
+    const completed=sheet.tasks.filter(t=>remoteState?.grades?.[t.id]?.done).length;
+    el('progressText').textContent='Poprawnie rozwiązane: '+completed+' / '+sheet.tasks.length;
+    el('bar').style.width=100*completed/sheet.tasks.length+'%';
+  }
+  el('clear').onclick = () => {
+    answers[sheet.tasks[selected].id] = { memory:{},output:'',checked:false };
+    remoteState = null; render(); schedule();
+  };
+  el('next').onclick = () => { storeCurrent(); selected = (selected+1)%sheet.tasks.length; render(); };
+  el('saveProgress').onclick = async () => {
+    try { el('saveProgress').disabled=true; await save(); msg('Postęp zapisany na Twoim koncie.'); }
+    catch(error) { msg('Nie udało się zapisać postępu: ' + error.message); }
+    finally { el('saveProgress').disabled=false; }
+  };
+  el('submitWorksheet').onclick = async () => {
+    storeCurrent();
+    const untouched = sheet.tasks.filter(t => {
+      const e = getEntry(t.id);
+      return !e.checked || (!e.output.trim() && !Object.values(e.memory).some(v => String(v).trim()));
+    }).length;
+    if (untouched && !confirm('Nie wszystkie zadania zrobione ('+untouched+' z '+sheet.tasks.length+'). Czy na pewno chcesz przesłać?')) return;
+    try {
+      el('submitWorksheet').disabled=true;
+      await save(null,true); msg('Karta pracy została oddana nauczycielowi.');
+    } catch(error) { msg('Nie udało się oddać karty: ' + error.message); }
+    finally { el('submitWorksheet').disabled=false; }
+  };
+  (async () => {
+    try {
+      db = await AlgoCloud.connect(); user = await AlgoCloud.session();
+      if (!user) throw Error('Zaloguj się, aby rozwiązywać kartę.');
+      const {data,error} = await db.from('worksheet_progress')
+        .select('answers,status,points,max_points,percent')
+        .eq('assignment_id',sheet.id).eq('student_id',user.id).maybeSingle();
+      if (error) throw error;
+      if (data?.answers && typeof data.answers === 'object') Object.assign(answers,data.answers);
+      // Wyniki zapisane online są prawdziwe, ale powtórne sprawdzenie zwraca detale zadania.
+      remoteState = data ? {points:data.points||0,maxPoints:data.max_points||0,
+        percent:data.percent||0,checked:Object.values(answers).filter(e=>e?.checked).length,
+        status:data.status,grades:{}} : null;
+      loading=false; render();
+      if (data?.status==='submitted') {
+        el('worksheetStatus').textContent='Oddana';
+        msg('Wczytano oddaną pracę.');
+      } else if(data) msg('Wczytano zapisane odpowiedzi.');
+    } catch(error) {
+      el('player').hidden=true; el('missing').hidden=false;
+      el('missing').textContent='Nie można wczytać postępu: '+(error.message||String(error));
+    }
+  })();
+})();
