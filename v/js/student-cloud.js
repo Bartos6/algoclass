@@ -16,41 +16,29 @@ document.addEventListener('DOMContentLoaded',async()=>{'use strict';
     await refresh();
   }catch(error){classBox.textContent='Nie można pobrać klas: '+(error.message||String(error));if(sheetBox)sheetBox.textContent='Nie można pobrać kart: '+(error.message||String(error))}
   async function refresh(){
-    const memberships=await db.from('class_memberships').select('class_id').eq('student_id',user.id);
-    if(memberships.error)throw memberships.error;
-    const ids=(memberships.data||[]).map(item=>item.class_id);
+    const classes=await AlgoData.studentClasses(db,user.id);
+    const ids=classes.map(x=>x.id);
     classBox.replaceChildren();if(sheetBox)sheetBox.replaceChildren();
     if(!ids.length){classBox.textContent='Nie należysz jeszcze do żadnej klasy. Wpisz kod otrzymany od nauczyciela.';if(sheetBox)sheetBox.textContent='Dołącz do klasy, aby zobaczyć przypisane karty pracy.';return}
-    const classes=await db.from('classrooms').select('id,name').in('id',ids);
-    if(classes.error)throw classes.error;
-    for(const item of classes.data||[]){
+    for(const item of classes){
       const button=document.createElement('button');button.type='button';button.className='class-card';
       const icon=document.createElement('span');icon.className='class-icon';icon.textContent=(item.name||'KL').trim().slice(0,2).toUpperCase();
       const body=document.createElement('span');const title=document.createElement('strong');title.textContent=item.name;
       const subtitle=document.createElement('small');subtitle.textContent='Zadania i materiały klasy';body.append(title,subtitle);
       const arrow=document.createElement('span');arrow.className='arrow';arrow.textContent='→';button.append(icon,body,arrow);
-      button.onclick=()=>{const nav=document.querySelector('.nav-link[data-view="worksheets"]');if(nav)nav.click();sheetBox.scrollIntoView({behavior:'smooth',block:'start'})};
+      button.onclick=()=>{const nav=document.querySelector('.nav-link[data-view="worksheets"]');if(nav)nav.click();sheetBox?.scrollIntoView({behavior:'smooth',block:'start'})};
       classBox.append(button)
     }
     if(!sheetBox)return;
-    const response=await db.from('worksheets').select('id,title,language,class_id').in('class_id',ids);
-    if(response.error)throw response.error;
+    let sheets;
+    try { sheets=await AlgoData.studentWorksheets(db,user.id,ids); }
+    catch(error){sheetBox.textContent="Nie można pobrać kart pracy: "+(error.message||String(error));return;}
     const heading=document.createElement('h3');heading.textContent='Karty pracy przypisane do Twoich klas';sheetBox.append(heading);
-    const sheets=response.data||[];
     if(!sheets.length){const p=document.createElement('p');p.textContent='Nauczyciel nie przypisał jeszcze żadnych kart pracy.';sheetBox.append(p);return}
-    const states=new Map();const sheetIds=sheets.map(item=>item.id);
-    const [drafts,submissions]=await Promise.all([
-      db.from('worksheet_progress').select('worksheet_id').eq('student_id',user.id).in('worksheet_id',sheetIds),
-      db.from('submissions').select('worksheet_id,percent').eq('student_id',user.id).in('worksheet_id',sheetIds)
-    ]);
-    if(drafts.error)throw new Error('Nie udało się odczytać postępów (worksheet_progress): '+drafts.error.message);
-    if(submissions.error)throw submissions.error;
-    for(const item of drafts.data||[])states.set(item.worksheet_id,'W trakcie');
-    for(const item of submissions.data||[])states.set(item.worksheet_id,'Oddana · '+item.percent+'%');
     for(const sheet of sheets){
       const div=document.createElement('div');div.className='worksheet-list-row';
       const text=document.createElement('span');text.textContent=sheet.title+' · '+(sheet.language==='python'?'Python':'C++');
-      const status=document.createElement('small');status.textContent=states.get(sheet.id)||'Nierozpoczęta';status.style.margin='0 10px';
+      const status=document.createElement('small');status.textContent=sheet.status;status.style.margin='0 10px';
       const link=document.createElement('a');link.href='worksheet.html?cloud='+encodeURIComponent(sheet.id);link.target='_blank';link.rel='noopener';link.textContent='Otwórz kartę ↗';
       div.append(text,status,link);sheetBox.append(div)
     }
