@@ -1,1 +1,28 @@
-document.addEventListener('DOMContentLoaded',async()=>{'use strict';const id=new URLSearchParams(location.search).get('cloud');if(!id){const m=document.getElementById('missing');m.hidden=false;m.textContent='Otwórz kartę przypisaną do klasy w panelu ucznia.';return}try{const db=await AlgoCloud.connect(),user=await AlgoCloud.session();if(!user)throw Error('Zaloguj się jako uczeń.');const {data:a,error}=await db.from('class_worksheets').select('id,class_id,worksheet_templates(id,title,language,content)').eq('id',id).single();if(error)throw error;if(!a?.worksheet_templates)throw Error('Nie znaleziono karty.');const c=a.worksheet_templates;window.AlgoCloudSheet={...c.content,id:a.id,title:c.title,lang:c.language,classId:a.class_id,showExpectedAnswers:!!c.content?.showCorrectAnswers};const script=document.createElement('script');script.src='js/worksheet-player.js';document.body.append(script)}catch(e){const m=document.getElementById('missing');m.hidden=false;m.textContent='Nie można otworzyć karty online: '+e.message}});
+document.addEventListener('DOMContentLoaded', async () => {
+  'use strict';
+  const id = new URLSearchParams(location.search).get('cloud');
+  const missing = document.getElementById('missing');
+  if (!id) {
+    missing.hidden = false;
+    missing.textContent = 'Otwórz kartę przypisaną do klasy w panelu ucznia.';
+    return;
+  }
+  try {
+    if (!window.AlgoCloud?.configured()) throw Error('Nie skonfigurowano Supabase.');
+    const db = await AlgoCloud.connect();
+    const user = await AlgoCloud.session();
+    if (!user) throw Error('Zaloguj się na konto ucznia.');
+    const { data, error } = await db.rpc('ac_student_worksheet', { p_assignment: id });
+    if (error) throw error;
+    if (!data?.tasks?.length) throw Error('Brak zadań w karcie.');
+    // Dane zwracane przez RPC nie zawierają wzorcowych wartości ani outputu.
+    window.AlgoCloudSheet = data;
+    const script = document.createElement('script');
+    script.src = 'js/worksheet-player.js?v=pilot-1';
+    script.onerror = () => { missing.hidden = false; missing.textContent = 'Nie udało się załadować karty.'; };
+    document.body.append(script);
+  } catch (error) {
+    missing.hidden = false;
+    missing.textContent = 'Nie można otworzyć karty: ' + (error.message || String(error));
+  }
+});
